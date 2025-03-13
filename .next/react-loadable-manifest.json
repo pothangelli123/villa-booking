@@ -1,0 +1,30 @@
+{
+  "pages\\index.tsx -> ../components/ImageCarousel": {
+    "id": "pages\\index.tsx -> ../components/ImageCarousel",
+    "files": [
+      "static/chunks/components_ImageCarousel_tsx.js"
+    ]
+  },
+  "pages\\index.tsx -> ../components/ParallaxSection": {
+    "id": "pages\\index.tsx -> ../components/ParallaxSection",
+    "files": [
+      "static/chunks/components_ParallaxSection_tsx.js"
+    ]
+  },
+  "pages\\index.tsx -> framer-motion": {
+    "id": "pages\\index.tsx -> framer-motion",
+    "files": []
+  },
+  "pages\\index.tsx -> gsap": {
+    "id": "pages\\index.tsx -> gsap",
+    "files": [
+      "static/chunks/node_modules_gsap_index_js.js"
+    ]
+  },
+  "pages\\index.tsx -> gsap/dist/ScrollTrigger": {
+    "id": "pages\\index.tsx -> gsap/dist/ScrollTrigger",
+    "files": [
+      "static/chunks/node_modules_gsap_dist_ScrollTrigger_js.js"
+    ]
+  }
+}
