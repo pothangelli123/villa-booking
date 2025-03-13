@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import motion, { Variants } from '../utils/motion';
 
 interface AnimatedTextProps {
   text: string;
@@ -33,7 +33,7 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
   }, []);
 
   // Variants for the container
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 1 },
     visible: (i = 1) => ({
       opacity: 1,
@@ -45,7 +45,7 @@ const AnimatedText: React.FC<AnimatedTextProps> = ({
   };
 
   // Get animation variants based on selected animation type
-  const getAnimationVariants = () => {
+  const getAnimationVariants = (): Variants => {
     switch (animation) {
       case 'fadeIn':
         return {

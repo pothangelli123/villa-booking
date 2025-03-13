@@ -1,18 +1,58 @@
 import { createClient } from '@supabase/supabase-js';
 
+// Define villa and booking types
+export type Villa = {
+  id: string;
+  name: string;
+  description: string;
+  short_description: string;
+  location: string;
+  price: number;
+  bedrooms: number;
+  bathrooms: number;
+  max_guests: number;
+  images: string[];
+  amenities: string[];
+  created_at: string;
+};
+
+export type Booking = {
+  id: string;
+  check_in: string;
+  check_out: string;
+  guests: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string;
+  special_requests?: string;
+  total_amount: number;
+  payment_id: string;
+  villa_id: string;
+  status: 'pending' | 'confirmed' | 'cancelled';
+  created_at: string;
+};
+
 // Mock data for fallback when Supabase isn't available
-let mockVillas = [];
-let mockBookings = [];
+let mockVillas: Villa[] = [];
+let mockBookings: Booking[] = [];
 
 // Try to initialize Supabase client with environment variables
 let supabaseUrl: string | undefined;
 let supabaseKey: string | undefined;
-let supabaseClient: any = null;
+let supabaseClient: ReturnType<typeof createClient> | null = null;
 
 // Handle the case when running in the browser where window is defined
 if (typeof window !== 'undefined') {
   supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  
+  console.log('Supabase config:', { 
+    urlDefined: !!supabaseUrl, 
+    keyDefined: !!supabaseKey,
+    urlValue: supabaseUrl ? supabaseUrl.substring(0, 8) + '...' : 'undefined',
+    keyValue: supabaseKey ? supabaseKey.substring(0, 5) + '...' : 'undefined'
+  });
   
   // Load mock data if needed
   try {
@@ -23,125 +63,282 @@ if (typeof window !== 'undefined') {
     } else {
       // Initialize Supabase client if credentials are available
       supabaseClient = createClient(supabaseUrl, supabaseKey);
+      console.log('Supabase client initialized successfully');
     }
   } catch (error) {
     console.error('Error initializing Supabase:', error);
   }
 }
 
-// Function to get the Supabase client or use mock API
+// Initialize Supabase client if we have valid credentials
+if (supabaseUrl && supabaseKey) {
+  supabaseClient = createClient(supabaseUrl, supabaseKey);
+}
+
+// Utility function to get the Supabase client
 export const getSupabaseClient = () => {
-  // Return actual client if available
-  if (supabaseClient) {
-    return supabaseClient;
-  }
-  
-  console.warn('Using mock API instead of Supabase. Set up .env.local with your Supabase credentials.');
-  
-  // Return a mock implementation that mimics Supabase's API
-  return {
-    from: (table: string) => {
-      return {
-        select: (columns?: string) => {
-          const mockSelect = {
-            data: table === 'villas' ? mockVillas : mockBookings,
-            error: null,
-            
-            // Mock supabase query methods
-            eq: (column: string, value: any) => {
-              let filtered = [];
-              if (table === 'villas') {
-                filtered = mockVillas.filter((item: any) => item[column] === value);
-              } else if (table === 'bookings') {
-                filtered = mockBookings.filter((item: any) => item[column] === value);
-              }
+  if (!supabaseClient) {
+    // Return mock client if actual client isn't available
+    return {
+      from: (table: string) => {
+        return {
+          select: (columns: string) => {
+            return {
+              data: table === 'villas' ? mockVillas : mockBookings,
+              error: null,
               
-              return {
-                data: filtered,
-                error: null,
-                single: () => {
-                  return {
-                    data: filtered.length > 0 ? filtered[0] : null,
-                    error: filtered.length > 0 ? null : { message: 'Not found' }
-                  };
+              // Mock supabase query methods
+              eq: (column: string, value: any) => {
+                let filtered: (Villa | Booking)[] = [];
+                if (table === 'villas') {
+                  filtered = mockVillas.filter((item: Villa) => item[column as keyof Villa] === value);
+                } else if (table === 'bookings') {
+                  filtered = mockBookings.filter((item: Booking) => item[column as keyof Booking] === value);
                 }
-              };
-            },
+                
+                return {
+                  data: filtered,
+                  error: null,
+                  single: () => {
+                    return {
+                      data: filtered.length > 0 ? filtered[0] : null,
+                      error: filtered.length > 0 ? null : { message: 'Not found' }
+                    };
+                  }
+                };
+              }
+            };
+          },
+          insert: (data: any) => {
+            const newItem = {
+              id: `mock-${Date.now()}`,
+              created_at: new Date().toISOString(),
+              ...data
+            };
             
-            // More methods can be added as needed
-          };
-          
-          return mockSelect;
-        },
-        
-        insert: (data: any) => {
-          const newItem = {
-            id: `mock-${Date.now()}`,
-            created_at: new Date().toISOString(),
-            ...data
-          };
-          
-          if (table === 'villas') {
-            mockVillas.push(newItem);
-          } else if (table === 'bookings') {
-            mockBookings.push(newItem);
+            if (table === 'villas') {
+              mockVillas.push(newItem);
+            } else if (table === 'bookings') {
+              mockBookings.push(newItem);
+            }
+            
+            return {
+              data: newItem,
+              error: null
+            };
+          },
+          update: (data: any) => {
+            return {
+              match: ({ id }: { id: string }) => {
+                if (table === 'villas') {
+                  const index = mockVillas.findIndex((item: any) => item.id === id);
+                  if (index !== -1) {
+                    mockVillas[index] = { ...mockVillas[index], ...data };
+                    return { data: mockVillas[index], error: null };
+                  }
+                } else if (table === 'bookings') {
+                  const index = mockBookings.findIndex((item: any) => item.id === id);
+                  if (index !== -1) {
+                    mockBookings[index] = { ...mockBookings[index], ...data };
+                    return { data: mockBookings[index], error: null };
+                  }
+                }
+                
+                return { data: null, error: { message: 'Item not found' } };
+              }
+            };
+          },
+          delete: () => {
+            return {
+              match: ({ id }: { id: string }) => {
+                if (table === 'villas') {
+                  const index = mockVillas.findIndex((item: any) => item.id === id);
+                  if (index !== -1) {
+                    const deleted = mockVillas[index];
+                    mockVillas.splice(index, 1);
+                    return { data: deleted, error: null };
+                  }
+                } else if (table === 'bookings') {
+                  const index = mockBookings.findIndex((item: any) => item.id === id);
+                  if (index !== -1) {
+                    const deleted = mockBookings[index];
+                    mockBookings.splice(index, 1);
+                    return { data: deleted, error: null };
+                  }
+                }
+                
+                return { data: null, error: { message: 'Item not found' } };
+              }
+            };
           }
-          
-          return {
-            data: newItem,
-            error: null
-          };
-        },
-        
-        update: (data: any) => {
-          return {
-            match: ({ id }: { id: string }) => {
-              if (table === 'villas') {
-                const index = mockVillas.findIndex((item: any) => item.id === id);
-                if (index !== -1) {
-                  mockVillas[index] = { ...mockVillas[index], ...data };
-                  return { data: mockVillas[index], error: null };
-                }
-              } else if (table === 'bookings') {
-                const index = mockBookings.findIndex((item: any) => item.id === id);
-                if (index !== -1) {
-                  mockBookings[index] = { ...mockBookings[index], ...data };
-                  return { data: mockBookings[index], error: null };
-                }
-              }
-              
-              return { data: null, error: { message: 'Item not found' } };
-            }
-          };
-        },
-        
-        delete: () => {
-          return {
-            match: ({ id }: { id: string }) => {
-              if (table === 'villas') {
-                const index = mockVillas.findIndex((item: any) => item.id === id);
-                if (index !== -1) {
-                  const deleted = mockVillas[index];
-                  mockVillas.splice(index, 1);
-                  return { data: deleted, error: null };
-                }
-              } else if (table === 'bookings') {
-                const index = mockBookings.findIndex((item: any) => item.id === id);
-                if (index !== -1) {
-                  const deleted = mockBookings[index];
-                  mockBookings.splice(index, 1);
-                  return { data: deleted, error: null };
-                }
-              }
-              
-              return { data: null, error: { message: 'Item not found' } };
-            }
-          };
-        }
-      };
-    }
-  };
+        };
+      }
+    };
+  }
+  return supabaseClient;
 };
+
+const supabase = getSupabaseClient();
+export default supabase;
+
+// Helper function to fetch a villa by ID
+export async function getVillaById(id: string): Promise<Villa | null> {
+  try {
+    if (supabaseClient) {
+      // Use type assertion to satisfy TypeScript
+      const query = supabase
+        .from('villas')
+        .select('*') as any;
+        
+      const { data, error } = await query
+        .eq('id', id)
+        .single();
+        
+      if (error) {
+        console.error('Error fetching villa:', error);
+        return null;
+      }
+      
+      return data as Villa;
+    } else {
+      // For mock implementation
+      const villa = mockVillas.find(v => v.id === id);
+      return villa || null;
+    }
+  } catch (error) {
+    console.error('Error fetching villa:', error);
+    return null;
+  }
+}
+
+// Helper function to create a new booking
+export async function createBooking(bookingData: Omit<Booking, 'id' | 'created_at'>) {
+  try {
+    console.log('Submitting booking data to Supabase:', bookingData);
+    
+    if (supabaseClient) {
+      console.log('Using real Supabase client for booking creation');
+      
+      // Use type assertion to satisfy TypeScript
+      const query = supabase
+        .from('bookings')
+        .insert([
+          {
+            ...bookingData,
+            created_at: new Date().toISOString(),
+          },
+        ]) as any;
+      
+      console.log('Prepared insert query for bookings table');
+      
+      try {
+        const { data, error } = await query.select();
+        
+        if (error) {
+          console.error('Supabase error details:', {
+            code: error.code,
+            message: error.message,
+            details: error.details,
+            hint: error.hint
+          });
+          throw error;
+        }
+
+        console.log('Booking created successfully:', data);
+        return data[0] as Booking;
+      } catch (queryError) {
+        console.error('Supabase query execution error:', queryError);
+        throw queryError;
+      }
+    } else {
+      // For mock implementation, create a fake ID and return the booking
+      console.log('Using mock implementation for booking creation');
+      const newBooking = {
+        ...bookingData,
+        id: `mock-${Date.now()}`,
+        created_at: new Date().toISOString()
+      } as Booking;
+      
+      mockBookings.push(newBooking);
+      console.log('Mock booking created:', newBooking);
+      return newBooking;
+    }
+  } catch (error) {
+    console.error('Error creating booking:', error);
+    throw error;
+  }
+}
+
+// Helper function to check villa availability
+export async function checkVillaAvailability(
+  villaId: string,
+  checkIn: string,
+  checkOut: string
+): Promise<boolean> {
+  try {
+    // For Supabase client
+    if (supabaseClient) {
+      // Use type assertion to satisfy TypeScript
+      const query = supabase
+        .from('bookings')
+        .select('*') as any;
+        
+      const { data, error } = await query
+        .eq('villa_id', villaId)
+        .eq('status', 'confirmed');
+
+      if (error) {
+        console.error('Error checking availability:', error);
+        return false;
+      }
+
+      // If there are no bookings for this villa, it's available
+      if (!data || data.length === 0) {
+        return true;
+      }
+
+      // Check if there are any overlapping bookings
+      const bookings = data as Booking[];
+      const hasOverlap = bookings.some(booking => {
+        const bookingStart = new Date(booking.check_in).getTime();
+        const bookingEnd = new Date(booking.check_out).getTime();
+        const requestStart = new Date(checkIn).getTime();
+        const requestEnd = new Date(checkOut).getTime();
+
+        return (requestStart <= bookingEnd && requestEnd >= bookingStart);
+      });
+
+      // If there are no overlapping bookings, the villa is available
+      return !hasOverlap;
+    } 
+    // For mock implementation
+    else {
+      // Filter bookings manually for the mock implementation
+      const confirmedBookings = mockBookings.filter(
+        booking => booking.villa_id === villaId && booking.status === 'confirmed'
+      );
+      
+      if (confirmedBookings.length === 0) {
+        return true;
+      }
+      
+      // Check for overlapping bookings
+      const hasOverlap = confirmedBookings.some(booking => {
+        const bookingStart = new Date(booking.check_in).getTime();
+        const bookingEnd = new Date(booking.check_out).getTime();
+        const requestStart = new Date(checkIn).getTime();
+        const requestEnd = new Date(checkOut).getTime();
+
+        return (requestStart <= bookingEnd && requestEnd >= bookingStart);
+      });
+      
+      return !hasOverlap;
+    }
+  } catch (error) {
+    console.error('Error checking availability:', error);
+    return false;
+  }
+}
 
 // Attempt to load mock data from public URL
 export const loadMockData = async () => {
@@ -203,95 +400,32 @@ if (typeof window !== 'undefined' && (!supabaseUrl || !supabaseKey)) {
   loadMockData();
 }
 
-export default getSupabaseClient();
-
-// Types for our Supabase tables
-export type Booking = {
-  id: string;
-  check_in: string;
-  check_out: string;
-  guests: number;
-  first_name: string;
-  last_name: string;
-  email: string;
-  phone: string;
-  special_requests?: string;
-  total_amount: number;
-  payment_id: string;
-  villa_id: string;
-  status: 'pending' | 'confirmed' | 'cancelled';
-  created_at: string;
-};
-
-export type Villa = {
-  id: string;
-  name: string;
-  description: string;
-  short_description: string;
-  location: string;
-  price: number;
-  bedrooms: number;
-  bathrooms: number;
-  max_guests: number;
-  images: string[];
-  amenities: string[];
-  created_at: string;
-};
-
-// Helper function to fetch a villa by ID
-export async function getVillaById(id: string): Promise<Villa | null> {
-  const { data, error } = await supabase
-    .from('villas')
-    .select('*')
-    .eq('id', id)
-    .single();
-
-  if (error) {
-    console.error('Error fetching villa:', error);
-    return null;
+// Helper function to test Supabase connection
+export async function testSupabaseConnection() {
+  try {
+    console.log('Testing Supabase connection...');
+    
+    if (supabaseClient) {
+      // Use actual Supabase client
+      const { data, error } = await supabaseClient
+        .from('villas')
+        .select('id, name')
+        .limit(1);
+        
+      if (error) {
+        console.error('Supabase connection test failed:', error);
+        return { success: false, error: error.message };
+      }
+      
+      console.log('Supabase connection successful:', data);
+      return { success: true, data };
+    } else {
+      // Using mock implementation
+      console.warn('Supabase client not initialized, using mock data');
+      return { success: false, error: 'Supabase client not initialized' };
+    }
+  } catch (error) {
+    console.error('Error testing Supabase connection:', error);
+    return { success: false, error: String(error) };
   }
-
-  return data;
-}
-
-// Helper function to create a new booking
-export async function createBooking(bookingData: Omit<Booking, 'id' | 'created_at'>) {
-  const { data, error } = await supabase
-    .from('bookings')
-    .insert([
-      {
-        ...bookingData,
-        created_at: new Date().toISOString(),
-      },
-    ])
-    .select();
-
-  if (error) {
-    console.error('Error creating booking:', error);
-    throw error;
-  }
-
-  return data[0];
-}
-
-// Helper function to check villa availability
-export async function checkVillaAvailability(
-  villaId: string,
-  checkIn: string,
-  checkOut: string
-): Promise<boolean> {
-  const { data, error } = await supabase
-    .from('bookings')
-    .select('*')
-    .eq('villa_id', villaId)
-    .eq('status', 'confirmed')
-    .or(`check_in.lte.${checkOut},check_out.gte.${checkIn}`);
-
-  if (error) {
-    console.error('Error checking availability:', error);
-    return false;
-  }
-
-  // If there are no overlapping bookings, the villa is available
-  return data.length === 0;
 } 

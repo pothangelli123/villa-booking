@@ -3,6 +3,8 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { FaSwimmingPool, FaBed, FaBath, FaWifi, FaCar, FaSnowflake, FaUtensils, FaTv, FaMountain, FaArrowRight, FaFacebookF, FaInstagram, FaTwitter, FaMapMarkerAlt, FaPhone, FaEnvelope, FaStar } from 'react-icons/fa';
 import dynamic from 'next/dynamic';
+import { useScroll, useTransform } from 'framer-motion';
+import motion from '../utils/motion';
 
 // Import regular components
 import Button from '../components/Button';
@@ -22,29 +24,9 @@ const DynamicImageCarousel = dynamic(() => import('../components/ImageCarousel')
 
 const DynamicParallaxSection = dynamic(() => import('../components/ParallaxSection'), { ssr: false });
 
-// Import motion components only on client-side
-const MotionComponents = dynamic(() => 
-  import('framer-motion').then((mod) => ({
-    motion: mod.motion,
-    useScroll: mod.useScroll, 
-    useTransform: mod.useTransform
-  })),
-  { ssr: false }
-);
-
-// Import GSAP only on client-side
-const GsapComponents = dynamic(() => 
-  import('gsap').then((mod) => {
-    // Import ScrollTrigger
-    return import('gsap/dist/ScrollTrigger').then((ScrollTriggerMod) => {
-      const gsap = mod.default;
-      const { ScrollTrigger } = ScrollTriggerMod;
-      gsap.registerPlugin(ScrollTrigger);
-      return { gsap, ScrollTrigger };
-    });
-  }),
-  { ssr: false }
-);
+// Import GSAP wrapper component
+// @ts-ignore
+const WithGSAP = dynamic(() => import('../components/withGSAP'), { ssr: false });
 
 // Define types for our villa data
 interface Amenity {
@@ -101,7 +83,11 @@ const villaData: VillaData = {
 };
 
 // Client-side Hero animations component
-const HeroAnimations = ({ children }) => {
+interface HeroAnimationsProps {
+  children: React.ReactNode;
+}
+
+const HeroAnimations: React.FC<HeroAnimationsProps> = ({ children }) => {
   const heroRef = useRef(null);
   
   useEffect(() => {
@@ -148,6 +134,166 @@ const HeroAnimations = ({ children }) => {
   );
 };
 
+// Define prop types
+interface MotionButtonProps {
+  children: React.ReactNode;
+  className?: string;
+  onClick?: () => void;
+  delay?: number;
+}
+
+interface VillaDescriptionParagraphProps {
+  paragraph: string;
+  idx: number;
+}
+
+interface AmenityItemProps {
+  amenity: {
+    icon: React.ReactNode;
+    name: string;
+  };
+  idx: number;
+}
+
+// Create a MotionButton component for our animated buttons
+const MotionButton: React.FC<MotionButtonProps> = ({ children, className, onClick, delay = 1.2 }) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay, duration: 0.6 }}
+      onClick={onClick}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+};
+
+// Create a ScrollArrow component for the animated scroll arrow
+const ScrollArrow = () => {
+  return (
+    <motion.div 
+      className="cursor-pointer"
+      animate={{ y: [0, 10, 0] }}
+      transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+    >
+      <a href="#villa-details">
+        <svg className="w-10 h-10 text-white filter drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+        </svg>
+      </a>
+    </motion.div>
+  );
+};
+
+// Create a VillaDescriptionParagraph component
+const VillaDescriptionParagraph: React.FC<VillaDescriptionParagraphProps> = ({ paragraph, idx }) => {
+  return (
+    <motion.p 
+      key={idx} 
+      className="mb-4 text-gray-700 leading-relaxed"
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.1 * idx, duration: 0.5 }}
+      viewport={{ once: true }}
+    >
+      {paragraph}
+    </motion.p>
+  );
+};
+
+// Create an AmenityItem component
+const AmenityItem: React.FC<AmenityItemProps> = ({ amenity, idx }) => {
+  return (
+    <motion.div 
+      key={idx} 
+      className="flex items-center p-3 rounded-lg bg-white shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100"
+      initial={{ opacity: 0, x: -20 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      transition={{ delay: 0.1 * idx, duration: 0.4 }}
+      viewport={{ once: true }}
+    >
+      <div className="text-primary-600 mr-3 text-xl">
+        {amenity.icon}
+      </div>
+      <span className="text-gray-700">{amenity.name}</span>
+    </motion.div>
+  );
+};
+
+// Create a BookNowButton component
+const BookNowButton = () => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9 }}
+      whileInView={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.5 }}
+      viewport={{ once: true }}
+    >
+      <Button
+        href="/booking"
+        variant="primary"
+        size="lg"
+        className="shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+      >
+        Book Your Stay
+      </Button>
+    </motion.div>
+  );
+};
+
+// Create a separate component for the features section
+const FeaturesSection = () => {
+  const featuresRef = useRef(null);
+  const { scrollYProgress } = useScroll();
+  const featuresY = useTransform(scrollYProgress, [0, 0.5], [0, 100]);
+  
+  return (
+    <motion.div 
+      ref={featuresRef}
+      style={{ y: featuresY }}
+      className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12"
+    >
+      <GlassmorphicCard 
+        animation="fadeInLeft"
+        delay={0.2} 
+        className="p-6 shadow-lg hover:shadow-xl transition-all duration-300"
+      >
+        <div className="flex items-center mb-4">
+          <FaBed className="text-primary-600 text-3xl mr-3" />
+          <h3 className="text-xl font-bold">{villaData.bedrooms} Bedrooms</h3>
+        </div>
+        <p className="text-gray-600">Spacious, luxurious bedrooms with premium linens and amenities.</p>
+      </GlassmorphicCard>
+      
+      <GlassmorphicCard 
+        animation="fadeInUp"
+        delay={0.4} 
+        className="p-6 shadow-lg hover:shadow-xl transition-all duration-300"
+      >
+        <div className="flex items-center mb-4">
+          <FaBath className="text-primary-600 text-3xl mr-3" />
+          <h3 className="text-xl font-bold">{villaData.bathrooms} Bathrooms</h3>
+        </div>
+        <p className="text-gray-600">Modern en-suite bathrooms with premium fixtures and amenities.</p>
+      </GlassmorphicCard>
+      
+      <GlassmorphicCard 
+        animation="fadeInRight"
+        delay={0.6} 
+        className="p-6 shadow-lg hover:shadow-xl transition-all duration-300"
+      >
+        <div className="flex items-center mb-4">
+          <FaSwimmingPool className="text-primary-600 text-3xl mr-3" />
+          <h3 className="text-xl font-bold">Private Pool</h3>
+        </div>
+        <p className="text-gray-600">Enjoy your own private swimming pool with panoramic views.</p>
+      </GlassmorphicCard>
+    </motion.div>
+  );
+};
+
 export default function Home() {
   // Use a simple string for the title, not JSX or an array
   const pageTitle = `${villaData.name} | Direct Booking`;
@@ -189,49 +335,25 @@ export default function Home() {
               </ClientOnly>
               
               <ClientOnly>
-                {() => {
-                  const { motion } = require('framer-motion');
-                  return (
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 1.2, duration: 0.6 }}
-                    >
-                      <Button 
-                        variant="primary" 
-                        size="lg"
-                        icon={<FaArrowRight />}
-                        iconPosition="right"
-                        className="shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
-                      >
-                        Book Now
-                      </Button>
-                    </motion.div>
-                  );
-                }}
+                <MotionButton delay={1.2}>
+                  <Button 
+                    variant="primary" 
+                    size="lg"
+                    icon={<FaArrowRight />}
+                    iconPosition="right"
+                    className="shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+                  >
+                    Book Now
+                  </Button>
+                </MotionButton>
               </ClientOnly>
             </div>
           </DynamicParallaxSection>
 
           <ClientOnly>
-            {() => {
-              const { motion } = require('framer-motion');
-              return (
-                <div className="absolute bottom-10 left-0 right-0 flex justify-center">
-                  <motion.div 
-                    className="cursor-pointer"
-                    animate={{ y: [0, 10, 0] }}
-                    transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-                  >
-                    <a href="#villa-details">
-                      <svg className="w-10 h-10 text-white filter drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-                      </svg>
-                    </a>
-                  </motion.div>
-                </div>
-              );
-            }}
+            <div className="absolute bottom-10 left-0 right-0 flex justify-center">
+              <ScrollArrow />
+            </div>
           </ClientOnly>
         </HeroAnimations>
       </ClientOnly>
@@ -269,80 +391,12 @@ export default function Home() {
           
           {/* Villa Features */}
           <ClientOnly>
-            {() => {
-              const { motion, useScroll, useTransform } = require('framer-motion');
-              const featuresRef = useRef(null);
-              const { scrollYProgress } = useScroll();
-              const featuresY = useTransform(scrollYProgress, [0, 0.5], [0, 100]);
-              
-              return (
-                <motion.div 
-                  ref={featuresRef}
-                  style={{ y: featuresY }}
-                  className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12"
-                >
-                  <GlassmorphicCard 
-                    animation="fadeInLeft"
-                    delay={0.2} 
-                    className="p-6 shadow-lg hover:shadow-xl transition-all duration-300"
-                  >
-                    <div className="flex items-center mb-4">
-                      <FaBed className="text-primary-600 text-3xl mr-3" />
-                      <h3 className="text-xl font-bold">{villaData.bedrooms} Bedrooms</h3>
-                    </div>
-                    <p className="text-gray-600">Spacious, luxurious bedrooms with premium linens and amenities.</p>
-                  </GlassmorphicCard>
-                  
-                  <GlassmorphicCard 
-                    animation="fadeInUp"
-                    delay={0.4} 
-                    className="p-6 shadow-lg hover:shadow-xl transition-all duration-300"
-                  >
-                    <div className="flex items-center mb-4">
-                      <FaBath className="text-primary-600 text-3xl mr-3" />
-                      <h3 className="text-xl font-bold">{villaData.bathrooms} Bathrooms</h3>
-                    </div>
-                    <p className="text-gray-600">Modern en-suite bathrooms with premium fixtures and amenities.</p>
-                  </GlassmorphicCard>
-                  
-                  <GlassmorphicCard 
-                    animation="fadeInRight"
-                    delay={0.6} 
-                    className="p-6 shadow-lg hover:shadow-xl transition-all duration-300"
-                  >
-                    <div className="flex items-center mb-4">
-                      <FaSwimmingPool className="text-primary-600 text-3xl mr-3" />
-                      <h3 className="text-xl font-bold">Private Pool</h3>
-                    </div>
-                    <p className="text-gray-600">Enjoy your own private swimming pool with panoramic views.</p>
-                  </GlassmorphicCard>
-                </motion.div>
-              );
-            }}
+            <FeaturesSection />
           </ClientOnly>
           
           <div className="mt-12 text-center">
             <ClientOnly>
-              {() => {
-                const { motion } = require('framer-motion');
-                return (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 0.5 }}
-                    viewport={{ once: true }}
-                  >
-                    <Button
-                      href="/booking"
-                      variant="primary"
-                      size="lg"
-                      className="shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
-                    >
-                      Book Your Stay
-                    </Button>
-                  </motion.div>
-                );
-              }}
+              <BookNowButton />
             </ClientOnly>
           </div>
         </div>
@@ -419,25 +473,15 @@ export default function Home() {
           >
             <div className="prose max-w-none">
               <ClientOnly>
-                {() => {
-                  const { motion } = require('framer-motion');
-                  return (
-                    <>
-                      {villaData.description.split('\n\n').map((paragraph, idx) => (
-                        <motion.p 
-                          key={idx} 
-                          className="mb-4 text-gray-700 leading-relaxed"
-                          initial={{ opacity: 0, y: 20 }}
-                          whileInView={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.1 * idx, duration: 0.5 }}
-                          viewport={{ once: true }}
-                        >
-                          {paragraph}
-                        </motion.p>
-                      ))}
-                    </>
-                  );
-                }}
+                <>
+                  {villaData.description.split('\n\n').map((paragraph, idx) => (
+                    <VillaDescriptionParagraph 
+                      key={idx}
+                      paragraph={paragraph}
+                      idx={idx}
+                    />
+                  ))}
+                </>
               </ClientOnly>
             </div>
           </GlassmorphicCard>
@@ -452,28 +496,15 @@ export default function Home() {
             
             <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
               <ClientOnly>
-                {() => {
-                  const { motion } = require('framer-motion');
-                  return (
-                    <>
-                      {villaData.amenities.map((amenity, idx) => (
-                        <motion.div 
-                          key={idx} 
-                          className="flex items-center p-3 rounded-lg bg-white shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100"
-                          initial={{ opacity: 0, x: -20 }}
-                          whileInView={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 0.1 * idx, duration: 0.4 }}
-                          viewport={{ once: true }}
-                        >
-                          <div className="text-primary-600 mr-3 text-xl">
-                            {amenity.icon}
-                          </div>
-                          <span className="text-gray-700">{amenity.name}</span>
-                        </motion.div>
-                      ))}
-                    </>
-                  );
-                }}
+                <>
+                  {villaData.amenities.map((amenity, idx) => (
+                    <AmenityItem 
+                      key={idx}
+                      amenity={amenity}
+                      idx={idx}
+                    />
+                  ))}
+                </>
               </ClientOnly>
             </div>
           </div>
@@ -498,16 +529,7 @@ export default function Home() {
               <p className="mt-2 text-gray-600">Direct booking price - no extra fees or commissions!</p>
               
               <div className="mt-6">
-                <Button
-                  href="/booking"
-                  variant="primary"
-                  size="md"
-                  icon={<FaArrowRight />}
-                  iconPosition="right"
-                  className="shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
-                >
-                  Book Now
-                </Button>
+                <BookNowButton />
               </div>
             </div>
           </GlassmorphicCard>

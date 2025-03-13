@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
-import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
+import motion, { Variants } from '../utils/motion';
 
 interface AnimatedSectionProps {
   children: ReactNode;
@@ -31,7 +31,7 @@ const AnimatedSection: React.FC<AnimatedSectionProps> = ({
   });
 
   // Define animation variants
-  const getVariants = () => {
+  const getVariants = (): Variants => {
     switch (animation) {
       case 'fadeIn':
         return {

@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import { motion } from 'framer-motion';
+import motion, { Variants } from '../utils/motion';
 
 interface GlassmorphicCardProps {
   children: ReactNode;
@@ -45,7 +45,7 @@ const GlassmorphicCard: React.FC<GlassmorphicCardProps> = ({
   };
 
   // Define animation variants
-  const getVariants = () => {
+  const getVariants = (): Variants => {
     switch (animation) {
       case 'fadeIn':
         return {

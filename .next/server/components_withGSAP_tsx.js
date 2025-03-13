@@ -1,0 +1,25 @@
+"use strict";
+/*
+ * ATTENTION: An "eval-source-map" devtool has been used.
+ * This devtool is neither made for production nor for readable output files.
+ * It uses "eval()" calls to create a separate source file with attached SourceMaps in the browser devtools.
+ * If you are trying to read the output file, select a different devtool (https://webpack.js.org/configuration/devtool/)
+ * or disable the default devtool with "devtool: false".
+ * If you are looking for production-ready output files, see mode: "production" (https://webpack.js.org/configuration/mode/).
+ */
+exports.id = "components_withGSAP_tsx";
+exports.ids = ["components_withGSAP_tsx"];
+exports.modules = {
+
+/***/ "./components/withGSAP.tsx":
+/*!*********************************!*\
+  !*** ./components/withGSAP.tsx ***!
+  \*********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react/jsx-dev-runtime */ \"react/jsx-dev-runtime\");\n/* harmony import */ var react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_0__);\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ \"react\");\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);\n\n\nconst WithGSAP = ({ children })=>{\n    (0,react__WEBPACK_IMPORTED_MODULE_1__.useEffect)(()=>{\n        // Import GSAP only on client-side\n        const importGSAP = async ()=>{\n            const gsapModule = await Promise.resolve(/*! import() */).then(__webpack_require__.t.bind(__webpack_require__, /*! gsap */ \"gsap\", 23));\n            const ScrollTriggerModule = await Promise.resolve(/*! import() */).then(__webpack_require__.t.bind(__webpack_require__, /*! gsap/dist/ScrollTrigger */ \"gsap/dist/ScrollTrigger\", 23));\n            const gsap = gsapModule.default;\n            const { ScrollTrigger } = ScrollTriggerModule;\n            gsap.registerPlugin(ScrollTrigger);\n        // Initialize GSAP animations here\n        // ...\n        };\n        importGSAP();\n    }, []);\n    return /*#__PURE__*/ (0,react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_0__.jsxDEV)(react_jsx_dev_runtime__WEBPACK_IMPORTED_MODULE_0__.Fragment, {\n        children: children\n    }, void 0, false);\n};\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (WithGSAP);\n//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiLi9jb21wb25lbnRzL3dpdGhHU0FQLnRzeCIsIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7QUFBb0Q7QUFNcEQsTUFBTUUsV0FBb0MsQ0FBQyxFQUFFQyxRQUFRLEVBQUU7SUFDckRGLGdEQUFTQSxDQUFDO1FBQ1Isa0NBQWtDO1FBQ2xDLE1BQU1HLGFBQWE7WUFDakIsTUFBTUMsYUFBYSxNQUFNLDhHQUFPO1lBQ2hDLE1BQU1DLHNCQUFzQixNQUFNLG9KQUFPO1lBRXpDLE1BQU1DLE9BQU9GLFdBQVdHLE9BQU87WUFDL0IsTUFBTSxFQUFFQyxhQUFhLEVBQUUsR0FBR0g7WUFFMUJDLEtBQUtHLGNBQWMsQ0FBQ0Q7UUFFcEIsa0NBQWtDO1FBQ2xDLE1BQU07UUFDUjtRQUVBTDtJQUNGLEdBQUcsRUFBRTtJQUVMLHFCQUFPO2tCQUFHRDs7QUFDWjtBQUVBLGlFQUFlRCxRQUFRQSxFQUFDIiwic291cmNlcyI6WyJ3ZWJwYWNrOi8vdmlsbGEtYm9va2luZy8uL2NvbXBvbmVudHMvd2l0aEdTQVAudHN4PzgwMmQiXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IFJlYWN0LCB7IHVzZUVmZmVjdCwgUmVhY3ROb2RlIH0gZnJvbSAncmVhY3QnO1xyXG5cclxuaW50ZXJmYWNlIFdpdGhHU0FQUHJvcHMge1xyXG4gIGNoaWxkcmVuOiBSZWFjdE5vZGU7XHJcbn1cclxuXHJcbmNvbnN0IFdpdGhHU0FQOiBSZWFjdC5GQzxXaXRoR1NBUFByb3BzPiA9ICh7IGNoaWxkcmVuIH0pID0+IHtcclxuICB1c2VFZmZlY3QoKCkgPT4ge1xyXG4gICAgLy8gSW1wb3J0IEdTQVAgb25seSBvbiBjbGllbnQtc2lkZVxyXG4gICAgY29uc3QgaW1wb3J0R1NBUCA9IGFzeW5jICgpID0+IHtcclxuICAgICAgY29uc3QgZ3NhcE1vZHVsZSA9IGF3YWl0IGltcG9ydCgnZ3NhcCcpO1xyXG4gICAgICBjb25zdCBTY3JvbGxUcmlnZ2VyTW9kdWxlID0gYXdhaXQgaW1wb3J0KCdnc2FwL2Rpc3QvU2Nyb2xsVHJpZ2dlcicpO1xyXG4gICAgICBcclxuICAgICAgY29uc3QgZ3NhcCA9IGdzYXBNb2R1bGUuZGVmYXVsdDtcclxuICAgICAgY29uc3QgeyBTY3JvbGxUcmlnZ2VyIH0gPSBTY3JvbGxUcmlnZ2VyTW9kdWxlO1xyXG4gICAgICBcclxuICAgICAgZ3NhcC5yZWdpc3RlclBsdWdpbihTY3JvbGxUcmlnZ2VyKTtcclxuICAgICAgXHJcbiAgICAgIC8vIEluaXRpYWxpemUgR1NBUCBhbmltYXRpb25zIGhlcmVcclxuICAgICAgLy8gLi4uXHJcbiAgICB9O1xyXG4gICAgXHJcbiAgICBpbXBvcnRHU0FQKCk7XHJcbiAgfSwgW10pO1xyXG4gIFxyXG4gIHJldHVybiA8PntjaGlsZHJlbn08Lz47XHJcbn07XHJcblxyXG5leHBvcnQgZGVmYXVsdCBXaXRoR1NBUDsgIl0sIm5hbWVzIjpbIlJlYWN0IiwidXNlRWZmZWN0IiwiV2l0aEdTQVAiLCJjaGlsZHJlbiIsImltcG9ydEdTQVAiLCJnc2FwTW9kdWxlIiwiU2Nyb2xsVHJpZ2dlck1vZHVsZSIsImdzYXAiLCJkZWZhdWx0IiwiU2Nyb2xsVHJpZ2dlciIsInJlZ2lzdGVyUGx1Z2luIl0sInNvdXJjZVJvb3QiOiIifQ==\n//# sourceURL=webpack-internal:///./components/withGSAP.tsx\n");
+
+/***/ })
+
+};
+;
