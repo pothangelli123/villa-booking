@@ -57,7 +57,7 @@ const villaData: VillaData = {
 
   Whether you're watching the sunset from your private terrace, enjoying a meal prepared by our optional private chef service, or taking a short stroll to the beach, this villa offers the ultimate luxury retreat for discerning travelers.`,
   shortDescription: "Luxurious 4-bedroom beachfront villa with private pool and stunning ocean views.",
-  price: 35000,
+  price: 400,
   bedrooms: 4,
   bathrooms: 4,
   maxGuests: 8,
@@ -519,7 +519,7 @@ export default function Home() {
               <h3 className="text-xl font-bold mb-4 text-primary-700">Pricing</h3>
               <div className="flex items-baseline">
                 <AnimatedText
-                  text={`₹${villaData.price.toLocaleString()}`}
+                  text={`$${villaData.price.toLocaleString()}`}
                   tag="span"
                   animation="fadeIn"
                   className="text-4xl font-bold text-primary-600"

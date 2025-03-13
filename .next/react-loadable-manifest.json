@@ -1,64 +1,42 @@
 {
-  "components\\withGSAP.tsx -> gsap": {
-    "id": "components\\withGSAP.tsx -> gsap",
+  "components/withGSAP.tsx -> gsap": {
+    "id": "components/withGSAP.tsx -> gsap",
     "files": [
       "static/chunks/node_modules_gsap_index_js.js"
     ]
   },
-  "components\\withGSAP.tsx -> gsap/dist/ScrollTrigger": {
-    "id": "components\\withGSAP.tsx -> gsap/dist/ScrollTrigger",
+  "components/withGSAP.tsx -> gsap/dist/ScrollTrigger": {
+    "id": "components/withGSAP.tsx -> gsap/dist/ScrollTrigger",
     "files": [
       "static/chunks/node_modules_gsap_dist_ScrollTrigger_js.js"
     ]
   },
-  "node_modules\\@supabase\\auth-js\\dist\\module\\lib\\helpers.js -> @supabase/node-fetch": {
-    "id": "node_modules\\@supabase\\auth-js\\dist\\module\\lib\\helpers.js -> @supabase/node-fetch",
-    "files": []
-  },
-  "node_modules\\@supabase\\functions-js\\dist\\module\\helper.js -> @supabase/node-fetch": {
-    "id": "node_modules\\@supabase\\functions-js\\dist\\module\\helper.js -> @supabase/node-fetch",
-    "files": []
-  },
-  "node_modules\\@supabase\\realtime-js\\dist\\module\\RealtimeClient.js -> @supabase/node-fetch": {
-    "id": "node_modules\\@supabase\\realtime-js\\dist\\module\\RealtimeClient.js -> @supabase/node-fetch",
-    "files": []
-  },
-  "node_modules\\@supabase\\realtime-js\\dist\\module\\RealtimeClient.js -> ws": {
-    "id": "node_modules\\@supabase\\realtime-js\\dist\\module\\RealtimeClient.js -> ws",
-    "files": [
-      "static/chunks/node_modules_ws_browser_js.js"
-    ]
-  },
-  "node_modules\\@supabase\\storage-js\\dist\\module\\lib\\helpers.js -> @supabase/node-fetch": {
-    "id": "node_modules\\@supabase\\storage-js\\dist\\module\\lib\\helpers.js -> @supabase/node-fetch",
-    "files": []
-  },
-  "pages\\index.tsx -> ../components/ImageCarousel": {
-    "id": "pages\\index.tsx -> ../components/ImageCarousel",
+  "pages/index.tsx -> ../components/ImageCarousel": {
+    "id": "pages/index.tsx -> ../components/ImageCarousel",
     "files": [
       "static/chunks/components_ImageCarousel_tsx.js"
     ]
   },
-  "pages\\index.tsx -> ../components/ParallaxSection": {
-    "id": "pages\\index.tsx -> ../components/ParallaxSection",
+  "pages/index.tsx -> ../components/ParallaxSection": {
+    "id": "pages/index.tsx -> ../components/ParallaxSection",
     "files": [
       "static/chunks/components_ParallaxSection_tsx.js"
     ]
   },
-  "pages\\index.tsx -> ../components/withGSAP": {
-    "id": "pages\\index.tsx -> ../components/withGSAP",
+  "pages/index.tsx -> ../components/withGSAP": {
+    "id": "pages/index.tsx -> ../components/withGSAP",
     "files": [
       "static/chunks/components_withGSAP_tsx.js"
     ]
   },
-  "pages\\index.tsx -> gsap": {
-    "id": "pages\\index.tsx -> gsap",
+  "pages/index.tsx -> gsap": {
+    "id": "pages/index.tsx -> gsap",
     "files": [
       "static/chunks/node_modules_gsap_index_js.js"
     ]
   },
-  "pages\\index.tsx -> gsap/dist/ScrollTrigger": {
-    "id": "pages\\index.tsx -> gsap/dist/ScrollTrigger",
+  "pages/index.tsx -> gsap/dist/ScrollTrigger": {
+    "id": "pages/index.tsx -> gsap/dist/ScrollTrigger",
     "files": [
       "static/chunks/node_modules_gsap_dist_ScrollTrigger_js.js"
     ]
