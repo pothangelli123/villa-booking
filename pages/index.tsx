@@ -50,7 +50,7 @@ interface VillaData {
 // KBM Resorts Villa data
 const villaData: VillaData = {
   name: "Casa Royal Villa at KBM Resorts",
-  location: "KBM Resorts, Goa, India",
+  location: "Colony Villas at Waikoloa CVW-306 69-555 Waikoloa Beach Drive Waikoloa, Waikoloa, Kona, Big Island, Hawaii, United States",
   description: `This stunning beachfront villa offers breathtaking ocean views and unparalleled luxury. Located at KBM Resorts (property #981), this magnificent property is perfect for families, couples, or friend groups looking for an exceptional vacation experience.
 
   The villa boasts 4 lavish bedrooms, each with its own en-suite bathroom, a fully equipped gourmet kitchen, and multiple living areas perfect for both entertaining and relaxation. Step outside to your private infinity pool that seemingly merges with the ocean horizon, surrounded by meticulously landscaped gardens.
@@ -632,6 +632,7 @@ export default function Home() {
                 <li><a href="#" className="text-gray-300 hover:text-white transition-colors">Home</a></li>
                 <li><a href="#villa-details" className="text-gray-300 hover:text-white transition-colors">Villa Details</a></li>
                 <li><a href="#gallery" className="text-gray-300 hover:text-white transition-colors">Gallery</a></li>
+                <li><Link href="/services" className="text-gray-300 hover:text-white transition-colors">Services</Link></li>
                 <li><a href="#description" className="text-gray-300 hover:text-white transition-colors">About</a></li>
               </ul>
             </div>
@@ -640,7 +641,7 @@ export default function Home() {
               <h3 className="text-lg font-semibold mb-4">Contact</h3>
               <ul className="space-y-2">
                 <li className="flex items-center text-gray-300">
-                  <FaMapMarkerAlt className="mr-2" /> KBM Resorts, Goa, India
+                  <FaMapMarkerAlt className="mr-2" /> Colony Villas at Waikoloa CVW-306 69-555 Waikoloa Beach Drive Waikoloa, Waikoloa, Kona, Big Island, Hawaii, United States
                 </li>
                 <li className="flex items-center text-gray-300">
                   <FaPhone className="mr-2" /> +91 123 456 7890
