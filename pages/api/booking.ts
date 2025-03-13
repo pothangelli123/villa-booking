@@ -1,7 +1,25 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { createBooking } from '../../utils/supabase';
+import { getSupabaseClient, createBooking } from '../../utils/supabase';
+
+// Remove duplicate client creation - we'll use getSupabaseClient instead
+// which handles service key vs anon key appropriately
+
+async function processPayment(amount: number): Promise<string> {
+  try {
+    // In a real app, you'd call your payment processor (Stripe, etc.)
+    // For now, we'll just generate a mock payment ID
+    await new Promise(resolve => setTimeout(resolve, 500)); // Simulate processing time
+    return `pay_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+  } catch (error) {
+    console.error('Payment processing error:', error);
+    throw new Error('Payment processing failed');
+  }
+}
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  // Get the admin client with service role for higher permissions
+  const supabase = getSupabaseClient(true); // Pass true to get admin client
+  
   // Only allow POST requests
   if (req.method !== 'POST') {
     res.setHeader('Allow', ['POST']);
@@ -36,25 +54,54 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     }
     
-    // If payment_id is missing, generate a temporary one
-    if (!bookingData.payment_id) {
-      bookingData.payment_id = `pid-${Date.now()}`;
+    // 1. Process payment first
+    console.log('Processing payment for amount:', bookingData.total_amount);
+    let paymentId;
+    try {
+      paymentId = await processPayment(bookingData.total_amount);
+      console.log('Payment processed successfully:', paymentId);
+    } catch (paymentError) {
+      console.error('Payment processing failed:', paymentError);
+      return res.status(400).json({
+        success: false,
+        error: 'Payment processing failed',
+        details: paymentError instanceof Error ? paymentError.message : String(paymentError)
+      });
     }
     
-    // Set status to pending if not provided
-    if (!bookingData.status) {
-      bookingData.status = 'pending';
+    // 2. If payment is successful, create booking
+    const bookingWithPayment = {
+      ...bookingData,
+      payment_id: paymentId,
+      status: 'confirmed', // Since payment was successful, mark as confirmed
+    };
+    
+    console.log('Creating booking with payment ID:', paymentId);
+    
+    try {
+      // Pass the admin client to ensure it uses the service role
+      const booking = await createBooking(bookingWithPayment, supabase);
+      
+      // Return success response
+      return res.status(201).json({ 
+        success: true, 
+        booking,
+        payment: {
+          id: paymentId,
+          amount: bookingData.total_amount,
+          status: 'completed'
+        },
+        message: 'Booking created successfully' 
+      });
+    } catch (bookingError) {
+      console.error('Error creating booking after payment:', bookingError);
+      return res.status(500).json({
+        success: false,
+        error: 'Failed to create booking after successful payment',
+        payment_id: paymentId,
+        details: bookingError instanceof Error ? bookingError.message : String(bookingError)
+      });
     }
-    
-    // Create the booking in Supabase
-    const booking = await createBooking(bookingData);
-    
-    // Return success response
-    return res.status(201).json({ 
-      success: true, 
-      booking,
-      message: 'Booking created successfully' 
-    });
     
   } catch (error) {
     console.error('Error creating booking:', error);
